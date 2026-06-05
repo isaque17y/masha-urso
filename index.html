@@ -21,6 +21,40 @@ body{
     position: relative;
 }
 
+/* Efeito Scanline - Linha horizontal simulando monitor CRT antigo */
+body::before {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 999;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+}
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 255, 136, 0.1);
+    opacity: 0.6;
+    z-index: 1000;
+    pointer-events: none;
+    animation: scanline 6s linear infinite;
+}
+
+@keyframes scanline {
+    0% { top: -5px; }
+    50% { top: 100%; }
+    100% { top: -5px; }
+}
+
 /* Configuração do Canvas para ficar fixo no fundo de tudo */
 #matrix-canvas {
     position: fixed;
@@ -42,6 +76,7 @@ body{
     box-shadow:0 0 25px rgba(0,255,136,.2);
     position: relative;
     z-index: 2; /* Fica acima do Canvas */
+    border: 1px solid rgba(0, 255, 136, 0.2);
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
@@ -64,12 +99,49 @@ body{
 .quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
 .vidas{font-size:20px;margin-bottom:20px;color:#ff4d6d;letter-spacing:3px;}
 .opcoes{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
-.btn-quiz{padding:14px;border:2px solid #00ff88;border-radius:10px;background:transparent;color:#00ff88;font-size:15px;cursor:pointer;font-weight:bold;transition:all 0.2s;-webkit-tap-highlight-color: transparent;}
-.btn-quiz:hover, .btn-quiz:active{background:#00ff88;color:black;} /* :active melhora o toque no celular */
+
+/* Botões do Quiz com efeito Glow Neon */
+.btn-quiz{
+    padding:14px;
+    border: 2px solid #00ff88;
+    border-radius:10px;
+    background:transparent;
+    color:#00ff88;
+    font-size:15px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.3), inset 0 0 4px rgba(0, 255, 136, 0.2);
+    text-shadow: 0 0 4px rgba(0, 255, 136, 0.5);
+}
+.btn-quiz:hover, .btn-quiz:active{
+    background:#00ff88;
+    color:black;
+    box-shadow: 0 0 20px #00ff88, inset 0 0 10px rgba(0, 255, 136, 0.5);
+}
 #feedback{margin-top:15px;height:45px;font-size:15px;font-weight:bold;line-height:1.4;}
 
-/* Botão final */
-#btn-executar{display:none;margin-top:25px;padding:15px 30px;border:none;border-radius:10px;background:#00ff88;color:black;font-size:18px;cursor:pointer;font-weight:bold;transition: transform 0.2s;width:100%;-webkit-tap-highlight-color: transparent;}
+/* Botão final executável com Glow intenso */
+#btn-executar{
+    display:none;
+    margin-top:25px;
+    padding:15px 30px;
+    border:none;
+    border-radius:10px;
+    background:#00ff88;
+    color:black;
+    font-size:18px;
+    cursor:pointer;
+    font-weight:bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width:100%;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 0 15px #00ff88;
+}
+#btn-executar:active {
+    transform: scale(0.98);
+}
 
 .resultado{display:none;text-align:center;animation:aparecer 1s ease;}
 .resultado h1{color:#ff4d6d;margin-bottom:20px;font-size:24px;}
@@ -93,12 +165,13 @@ body{
     border-radius: 10px;
     cursor: pointer;
     border: none;
-    transition: transform 0.1s;
+    transition: transform 0.1s, box-shadow 0.2s;
     -webkit-tap-highlight-color: transparent;
 }
 #btn-sim {
     background: #00ff88;
     color: black;
+    box-shadow: 0 0 15px #00ff88;
 }
 #btn-sim:active {
     transform: scale(0.95);
@@ -108,6 +181,7 @@ body{
     color: white;
     position: relative; 
     z-index: 10;
+    box-shadow: 0 0 15px #ff4d6d;
 }
 
 /* Estilo do Painel do Contador em Tempo Real */
@@ -119,6 +193,7 @@ body{
     border: 2px dashed #00ff88;
     border-radius: 10px;
     animation: aparecer 1s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
 }
 .contador-titulo {
     font-size: 14px;
@@ -321,7 +396,7 @@ function iniciarTerminal() {
     escreverLinha();
 }
 
-function escribirLinha() { // Mantendo o padrão do interpretador
+function escribirLinha() { 
     escreverLinha();
 }
 

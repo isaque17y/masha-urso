@@ -60,11 +60,6 @@ body{
 </style>
 </head>
 <body>
-
-<audio id="som-clique" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav"></audio>
-<audio id="som-sucesso" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2700/2700-84.wav"></audio>
-<audio id="som-erro" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/911/911-84.wav"></audio>
-
 <div class="container">
     
     <div id="quiz" class="quiz-container">
@@ -90,16 +85,6 @@ body{
 </div>
 
 <script>
-// Capturando os elementos de áudio do HTML
-const somClique = document.getElementById("som-clique");
-const somSucesso = document.getElementById("som-sucesso");
-const somErro = document.getElementById("som-erro");
-
-// Ajuste de volumes
-somClique.volume = 0.4;
-somSucesso.volume = 0.5;
-somErro.volume = 0.4;
-
 const perguntas = [
     {
         pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
@@ -152,13 +137,6 @@ function carregarPergunta() {
     }
 }
 
-function ticarSom(audio) {
-    if (audio) {
-        audio.currentTime = 0;
-        audio.play().catch(e => console.log("Áudio bloqueado temporariamente pelo navegador"));
-    }
-}
-
 function verificarResposta(indiceSelecionado) {
     const feedback = document.getElementById("feedback");
     
@@ -166,7 +144,6 @@ function verificarResposta(indiceSelecionado) {
     botoes.forEach(btn => btn.disabled = true);
     
     if (indiceSelecionado === perguntas[perguntaAtual].correta) {
-        ticarSom(somSucesso);
         feedback.style.color = "#00ff88";
         
         if (perguntaAtual === 0) {
@@ -178,7 +155,6 @@ function verificarResposta(indiceSelecionado) {
         perguntaAtual++;
         setTimeout(carregarPergunta, 3000); 
     } else {
-        ticarSom(somErro);
         vidas--;
         atualizarVidas();
         
@@ -238,7 +214,9 @@ function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
         
+        // Se a linha for um erro (span) ou a animação da barra de progresso, atualiza mais rápido e direto
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
+            // Se for barra de progresso, sobrescreve a linha anterior para dar efeito de animação fluida
             if (fraseCompleta.startsWith("[")) {
                 let barraId = "progresso-barra";
                 let containerBarra = document.getElementById(barraId);
@@ -248,22 +226,16 @@ function escreverLinha() {
                     containerBarra = document.getElementById(barraId);
                 }
                 containerBarra.innerHTML = fraseCompleta;
-                ticarSom(somClique); 
                 indiceMensagem++;
-                setTimeout(escreverLinha, 250); 
+                setTimeout(escreverLinha, 250); // Velocidade do carregamento da barra
             } else {
                 elementoTerminal.innerHTML += fraseCompleta + "<br>";
-                ticarSom(somErro); 
                 indiceMensagem++;
                 setTimeout(escreverLinha, 600);
             }
         } else {
             if (indiceCaractere === 0) {
                 elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "'></span><br>";
-            }
-            
-            if(fraseCompleta.charAt(indiceCaractere) !== " ") {
-                ticarSom(somClique);
             }
             
             document.getElementById("linha-" + indiceMensagem).innerHTML += fraseCompleta.charAt(indiceCaractere);

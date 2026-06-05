@@ -46,40 +46,6 @@ body{
 .resultado p{color:white;font-size:17px;margin:12px 0; line-height: 1.6;}
 .heart{position:fixed;top:-20px;font-size:25px;pointer-events:none;animation:cair linear forwards;}
 
-/* Área e estilo dos botões de decisão final */
-.botoes-resposta {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    margin-top: 35px;
-    min-height: 60px;
-    position: relative;
-}
-.btn-final {
-    padding: 12px 35px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 10px;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.1s;
-    -webkit-tap-highlight-color: transparent;
-}
-#btn-sim {
-    background: #00ff88;
-    color: black;
-}
-#btn-sim:active {
-    transform: scale(0.95);
-}
-#btn-nao {
-    background: #ff4d6d;
-    color: white;
-    position: relative; /* Permite movimentação dinâmica via JS */
-    z-index: 10;
-}
-
 @keyframes cair{from{transform:translateY(0) rotate(0deg);opacity:1;}to{transform:translateY(110vh) rotate(360deg);opacity:0;}}
 @keyframes aparecer{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
 
@@ -109,17 +75,12 @@ body{
     <button id="btn-executar" onclick="pedido()">Executar Futuro</button>
     
     <div class="resultado" id="resultado">
-        <h1 id="titulo-sucesso">❤️ Quer namorar comigo? ❤️</h1>
+        <h1>❤️ Quer namorar comigo? ❤️</h1>
         <p>Any Alice Ibiapina Duarte,</p>
         <p>desde que você entrou na minha vida, meus dias ficaram mais felizes e especiais.</p>
         <p>Cada conversa, cada risada e cada momento ao seu lado fizeram eu perceber o quanto você significa para mim.</p>
         <p>Por isso, hoje eu tenho apenas uma pergunta:</p>
         <p>🌹 Você aceita ser minha namorada? 🌹</p>
-
-        <div class="botoes-resposta" id="bloco-botoes">
-            <button class="btn-final" id="btn-sim" onclick="aceitou()">Sim!</button>
-            <button class="btn-final" id="btn-nao" onmouseover="fugir()" ontouchstart="fugir()">Não</button>
-        </div>
     </div>
 </div>
 
@@ -249,15 +210,13 @@ function iniciarTerminal() {
     escreverLinha();
 }
 
-function escribirLinha() { /* Mantendo compatível com a sua estrutura de processamento */
-    escreverLinha();
-}
-
 function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
         
+        // Se a linha for um erro (span) ou a animação da barra de progresso, atualiza mais rápido e direto
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
+            // Se for barra de progresso, sobrescreve a linha anterior para dar efeito de animação fluida
             if (fraseCompleta.startsWith("[")) {
                 let barraId = "progresso-barra";
                 let containerBarra = document.getElementById(barraId);
@@ -268,7 +227,7 @@ function escreverLinha() {
                 }
                 containerBarra.innerHTML = fraseCompleta;
                 indiceMensagem++;
-                setTimeout(escreverLinha, 250); 
+                setTimeout(escreverLinha, 250); // Velocidade do carregamento da barra
             } else {
                 elementoTerminal.innerHTML += fraseCompleta + "<br>";
                 indiceMensagem++;
@@ -309,35 +268,6 @@ function pedido(){
     document.getElementById("terminal").style.display="none";
     document.getElementById("btn-executar").style.display="none";
     document.getElementById("resultado").style.display="block";
-}
-
-// Faz o botão "Não" fugir de forma randômica e segura pela janela
-function fugir() {
-    const botaoNao = document.getElementById("btn-nao");
-    
-    // Altera a posição para absolute logo na primeira fuga para dar total liberdade de movimento
-    botaoNao.style.position = "fixed";
-    
-    // Define os limites máximos na tela descontando o tamanho médio do botão para evitar barras de rolagem indesejadas
-    const larguraMaxima = window.innerWidth - 120;
-    const alturaMaxima = window.innerHeight - 50;
-    
-    const posXAleatoria = Math.floor(Math.random() * larguraMaxima);
-    const posYAleatoria = Math.floor(Math.random() * alturaMaxima);
-    
-    botaoNao.style.left = posXAleatoria + "px";
-    botaoNao.style.top = posYAleatoria + "px";
-}
-
-// Função disparada exclusivamente quando o "Sim!" é clicado
-function aceitou() {
-    // Remove o bloco de botões para estabilizar o visual final
-    document.getElementById("bloco-botoes").style.display = "none";
-    
-    // Atualiza o título romântico confirmando o sucesso
-    document.getElementById("titulo-sucesso").innerHTML = "🥰 Oficializado com Sucesso! 🥰";
-    
-    // Inicia a chuva incessante de corações na tela
     setInterval(criarCoracao, 250); 
 }
 

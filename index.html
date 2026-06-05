@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeto Futuro.exe</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Consolas, monospace;}
+html, body {
+    width: 100%;
+    overflow-x: hidden; /* Garante que nada escape para os lados no celular */
+}
+body{
+    background:#0d1117;
+    color:#00ff88;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:15px; /* Menor para aproveitar mais a tela do celular */
+}
+.container{
+    width:100%;
+    max-width:600px; /* Reduzido para encaixar melhor visualmente em qualquer tela */
+    background:#161b22;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 0 25px rgba(0,255,136,.2);
+}
+#terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
+
+/* Estilos para a seção de perguntas e vidas */
+.quiz-container{text-align:center;}
+.quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
+.vidas{font-size:20px;margin-bottom:20px;color:#ff4d6d;letter-spacing:3px;}
+.opcoes{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
+.btn-quiz{padding:14px;border:2px solid #00ff88;border-radius:10px;background:transparent;color:#00ff88;font-size:15px;cursor:pointer;font-weight:bold;transition:all 0.2s;-webkit-tap-highlight-color: transparent;}
+.btn-quiz:hover, .btn-quiz:active{background:#00ff88;color:black;} /* :active melhora o toque no celular */
+#feedback{margin-top:15px;height:45px;font-size:15px;font-weight:bold;line-height:1.4;}
+
+/* Botão final */
+#btn-executar{display:none;margin-top:25px;padding:15px 30px;border:none;border-radius:10px;background:#00ff88;color:black;font-size:18px;cursor:pointer;font-weight:bold;transition: transform 0.2s;width:100%;-webkit-tap-highlight-color: transparent;}
+
+.resultado{display:none;text-align:center;animation:aparecer 1s ease;}
+.resultado h1{color:#ff4d6d;margin-bottom:20px;font-size:24px;}
+.resultado p{color:white;font-size:17px;margin:12px 0; line-height: 1.6;}
+.heart{position:fixed;top:-20px;font-size:25px;pointer-events:none;animation:cair linear forwards;}
+
+@keyframes cair{from{transform:translateY(0) rotate(0deg);opacity:1;}to{transform:translateY(110vh) rotate(360deg);opacity:0;}}
+@keyframes aparecer{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+
+/* Ajustes específicos para telas muito pequenas (Mobile Antigos ou menores) */
+@media (max-width: 380px) {
+    .container{padding: 15px;}
+    .quiz-container h2{font-size: 18px;}
+    .resultado h1{font-size: 20px;}
+    .resultado p{font-size: 15px;}
+    #terminal{font-size: 14px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+    
+    <div id="quiz" class="quiz-container">
+        <h2>[SISTEMA BLOQUEADO]</h2>
+        <div class="vidas" id="contador-vidas">Tentativas: ❤️❤️❤️</div>
+        
+        <h3 id="pergunta-texto" style="color: white; margin-top: 10px; font-size: 18px;">Carregando pergunta...</h3>
+        <div class="opcoes" id="opcoes-container"></div>
+        <div id="feedback"></div>
+    </div>
+
+    <div id="terminal"></div>
+    <button id="btn-executar" onclick="pedido()">Executar Futuro.exe</button>
+    
+    <div class="resultado" id="resultado">
+        <h1>❤️ Quer namorar comigo? ❤️</h1>
+        <p>Any Alice Ibiapina Duarte,</p>
+        <p>desde que você entrou na minha vida, meus dias ficaram mais felizes e especiais.</p>
+        <p>Cada conversa, cada risada e cada momento ao seu lado fizeram eu perceber o quanto você significa para mim.</p>
+        <p>Por isso, hoje eu tenho apenas uma pergunta:</p>
+        <p>🌹 Você aceita ser minha namorada? 🌹</p>
+    </div>
+</div>
+
+<script>
+const perguntas = [
+    {
+        pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
+        opcoes: ["Any Alice", "Any Alice de certeza", "Todas as alternativas anteriores"],
+        correta: 2 
+    },
+    {
+        pergunta: "2. Qual é o nosso passatempo favorito juntos?",
+        opcoes: ["Conversar até tarde", "Rir de bobeiras", "Ficar colados um no outro", "Todas as opções juntas!"],
+        correta: 3
+    },
+    {
+        pergunta: "3. O que o sistema deve fazer com os sentimentos atuais?",
+        opcoes: ["Deixar como está", "Tornar oficial para sempre", "Apagar histórico"],
+        correta: 1
+    }
+];
+
+let perguntaAtual = 0;
+let vidas = 3;
+
+function atualizarVidas() {
+    const textoVidas = "❤️".repeat(vidas);
+    document.getElementById("contador-vidas").innerHTML = "Tentativas: " + (textoVidas || "💔");
+}
+
+function carregarPergunta() {
+    const feedback = document.getElementById("feedback");
+    feedback.innerHTML = "";
+    atualizarVidas();
+    
+    if (perguntaAtual < perguntas.length) {
+        const dados = perguntas[perguntaAtual];
+        document.getElementById("pergunta-texto").innerText = dados.pergunta;
+        
+        const opcoesContainer = document.getElementById("opcoes-container");
+        opcoesContainer.innerHTML = "";
+        
+        dados.opcoes.forEach((opcao, indice) => {
+            const botao = document.createElement("button");
+            botao.className = "btn-quiz";
+            botao.innerText = opcao;
+            botao.onclick = () => verificarResposta(indice);
+            opcoesContainer.appendChild(botao);
+        });
+    } else {
+        document.getElementById("quiz").style.display = "none";
+        document.getElementById("terminal").style.display = "block";
+        escrever();
+    }
+}
+
+function verificarResposta(indiceSelecionado) {
+    const feedback = document.getElementById("feedback");
+    
+    const botoes = document.querySelectorAll(".btn-quiz");
+    botoes.forEach(btn => btn.disabled = true);
+    
+    if (indiceSelecionado === perguntas[perguntaAtual].correta) {
+        feedback.style.color = "#00ff88";
+        
+        if (perguntaAtual === 0) {
+            feedback.innerText = "Isso cachinhos! Avançando...";
+        } else {
+            feedback.innerText = "Até que você não é ruim, está quase chegando...";
+        }
+        
+        perguntaAtual++;
+        setTimeout(carregarPergunta, 3000); 
+    } else {
+        vidas--;
+        atualizarVidas();
+        
+        feedback.style.color = "#ff4d6d";
+        
+        if (vidas === 2) {
+            feedback.innerText = "Perdeu aura, mais duas chances para ganhar sua aura de volta.";
+        } else if (vidas === 1) {
+            feedback.innerText = "Perdeu aura, última chance para ganhar sua aura de volta!";
+        } else if (vidas <= 0) {
+            feedback.innerText = "GAME OVER! Perdeu toda a aura. Reiniciando o sistema...";
+            vidas = 3;
+            perguntaAtual = 0;
+            setTimeout(carregarPergunta, 3000); 
+            return;
+        }
+        
+        setTimeout(carregarPergunta, 3000); 
+    }
+}
+
+const mensagens=[
+"> Identidade confirmada com sucesso.",
+"> Iniciando Projeto Futuro.exe...",
+"> Carregando memórias...",
+"> Verificando compatibilidade...",
+"> Compatibilidade encontrada: 100%",
+"> Procurando pessoa perfeita...",
+"> Resultado encontrado:",
+"> Any Alice Ibiapina Duarte ❤️",
+"> Carinho ✓",
+"> Confiança ✓",
+"> Risadas ✓",
+"> Admiração ✓",
+"> Motivo: impossível não se apaixonar.",
+"<span style='color: #ff4d6d;'>&gt; Erro detectado:</span>",
+"<span style='color: #ff4d6d;'>&gt; Relacionamento ainda não oficializado.</span>"
+];
+
+let indice=0;
+function escrever(){
+    if(indice < mensagens.length){
+        document.getElementById("terminal").innerHTML += mensagens[indice] + "<br>";
+        indice++;
+        setTimeout(escrever, 900);
+    } else {
+        document.getElementById("btn-executar").style.display = "inline-block";
+    }
+}
+
+function criarCoracao(){
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerHTML="❤️";
+    heart.style.left=Math.random()*window.innerWidth+"px";
+    // Deixei a queda um pouquinho mais rápida e adicionando rotação para ficar mais dinâmico
+    heart.style.animationDuration=(Math.random()*2+2.5)+"s"; 
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),4500);
+}
+
+function pedido(){
+    document.getElementById("terminal").style.display="none";
+    document.getElementById("btn-executar").style.display="none";
+    document.getElementById("resultado").style.display="block";
+    setInterval(criarCoracao, 250); // Ajustado o tempo de spawn dos corações para não travar celulares fracos
+}
+
+carregarPergunta();
+</script>
+</body>
+</html>

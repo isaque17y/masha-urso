@@ -198,7 +198,12 @@ const perguntas = [
         correta: 3
     },
     {
-        pergunta: "3. O que o sistema deve fazer com os sentimentos atuais?",
+        pergunta: "3. Qual salgadinho você ama comer?",
+        opcoes: ["Doritos", "Cheetos", "Takis", "Batata Pringles"],
+        correta: 2
+    },
+    {
+        pergunta: "4. O que o sistema deve fazer com os sentimentos atuais?",
         opcoes: ["Deixar como está", "Tornar oficial para sempre", "Apagar histórico"],
         correta: 1
     }
@@ -258,6 +263,8 @@ function verificarResposta(indiceSelecionado) {
         
         if (perguntaAtual === 0) {
             feedback.innerText = "Isso cachinhos! Avançando...";
+        } else if (perguntaAtual === 2) {
+            feedback.innerText = "Acertou! Sabia que era esse o vício. Próxima...";
         } else {
             feedback.innerText = "Até que você não é ruim, está quase chegando...";
         }

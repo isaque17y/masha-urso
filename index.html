@@ -45,16 +45,6 @@ body{
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
-/* EFEITO DO CURSOR PISCANTE AUTÊNTICO */
-.cursor-ativo::after {
-    content: "_";
-    animation: piscar 0.8s infinite;
-}
-@keyframes piscar {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-
 /* Estilos para a seção de perguntas e vidas */
 .quiz-container{text-align:center;}
 .quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
@@ -308,15 +298,6 @@ function iniciarTerminal() {
 }
 
 function escreverLinha() {
-    // Remove o efeito do cursor da linha anterior antes de começar a nova
-    if (indiceMensagem > 0) {
-        const linhaAnterior = document.getElementById("linha-" + (indiceMensagem - 1));
-        if (linhaAnterior) linhaAnterior.classList.remove("cursor-ativo");
-        
-        const barraAnterior = document.getElementById("progresso-barra");
-        if (barraAnterior) barraAnterior.classList.remove("cursor-ativo");
-    }
-
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
         
@@ -326,20 +307,20 @@ function escreverLinha() {
                 let containerBarra = document.getElementById(barraId);
                 
                 if (!containerBarra) {
-                    elementoTerminal.innerHTML += "<span id='" + barraId + "' class='cursor-ativo'></span><br>";
+                    elementoTerminal.innerHTML += "<span id='" + barraId + "'></span><br>";
                     containerBarra = document.getElementById(barraId);
                 }
                 containerBarra.innerHTML = fraseCompleta;
                 indiceMensagem++;
                 setTimeout(escreverLinha, 250); 
             } else {
-                elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "' class='cursor-ativo'>" + fraseCompleta + "</span><br>";
+                elementoTerminal.innerHTML += fraseCompleta + "<br>";
                 indiceMensagem++;
                 setTimeout(escreverLinha, 600);
             }
         } else {
             if (indiceCaractere === 0) {
-                elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "' class='cursor-ativo'></span><br>";
+                elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "'></span><br>";
             }
             
             document.getElementById("linha-" + indiceMensagem).innerHTML += fraseCompleta.charAt(indiceCaractere);
@@ -354,10 +335,6 @@ function escreverLinha() {
             }
         }
     } else {
-        // Mantém o cursor piscando na última linha esteticamente
-        const ultimaLinha = document.getElementById("linha-" + (mensagens.length - 1));
-        if (ultimaLinha) ultimaLinha.classList.add("cursor-ativo");
-        
         document.getElementById("btn-executar").style.display = "inline-block";
     }
 }
@@ -409,7 +386,7 @@ function atualizarContador() {
     // Formata os números com zero à esquerda se forem menores que 10
     const dDisplay = dias + "d ";
     const hDisplay = (horas < 10 ? "0" : "") + horas + "h ";
-    const mDisplay = (minutos < 10 ? "0" : "") + minutes + "m ";
+    const mDisplay = (minutos < 10 ? "0" : "") + minutos + "m ";
     const sDisplay = (segundos < 10 ? "0" : "") + segundos + "s";
 
     document.getElementById("relogio-tempo").innerHTML = dDisplay + hDisplay + mDisplay + sDisplay;

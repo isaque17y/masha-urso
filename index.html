@@ -166,7 +166,7 @@ body{
     <button id="btn-executar" onclick="pedido()">Executar Futuro</button>
     
     <div class="resultado" id="resultado">
-        <h1 id="titulo-sucesso">❤️ Quer namorar comigo? ❤️</h1>
+        <h1 id="titulo-sucesso"></h1>
         <p>Any Alice Ibiapina Duarte,</p>
         <p>desde que você entrou na minha vida, meus dias ficaram mais felizes e especiais.</p>
         <p>Cada conversa, cada risada e cada momento ao seu lado fizeram eu perceber o quanto você significa para mim.</p>
@@ -318,10 +318,6 @@ let elementoTerminal = document.getElementById("terminal");
 
 function iniciarTerminal() {
     elementoTerminal.innerHTML = "";
-    escreverLinha();
-}
-
-function escribirLinha() { // Mantendo o padrão do interpretador
     escreverLinha();
 }
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Projeto Futuro.exe</title>
+<title>Projeto Futuro</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Consolas, monospace;}
 html, body {
@@ -60,6 +60,11 @@ body{
 </style>
 </head>
 <body>
+
+<audio id="som-clique" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav"></audio>
+<audio id="som-sucesso" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2700/2700-84.wav"></audio>
+<audio id="som-erro" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/911/911-84.wav"></audio>
+
 <div class="container">
     
     <div id="quiz" class="quiz-container">
@@ -72,7 +77,7 @@ body{
     </div>
 
     <div id="terminal"></div>
-    <button id="btn-executar" onclick="pedido()">Executar Futuro.exe</button>
+    <button id="btn-executar" onclick="pedido()">Executar Futuro</button>
     
     <div class="resultado" id="resultado">
         <h1>❤️ Quer namorar comigo? ❤️</h1>
@@ -85,6 +90,16 @@ body{
 </div>
 
 <script>
+// Capturando os elementos de áudio do HTML
+const somClique = document.getElementById("som-clique");
+const somSucesso = document.getElementById("som-sucesso");
+const somErro = document.getElementById("som-erro");
+
+// Ajuste de volumes
+somClique.volume = 0.4;
+somSucesso.volume = 0.5;
+somErro.volume = 0.4;
+
 const perguntas = [
     {
         pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
@@ -133,7 +148,14 @@ function carregarPergunta() {
     } else {
         document.getElementById("quiz").style.display = "none";
         document.getElementById("terminal").style.display = "block";
-        escrever();
+        iniciarTerminal();
+    }
+}
+
+function ticarSom(audio) {
+    if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Áudio bloqueado temporariamente pelo navegador"));
     }
 }
 
@@ -144,6 +166,7 @@ function verificarResposta(indiceSelecionado) {
     botoes.forEach(btn => btn.disabled = true);
     
     if (indiceSelecionado === perguntas[perguntaAtual].correta) {
+        ticarSom(somSucesso);
         feedback.style.color = "#00ff88";
         
         if (perguntaAtual === 0) {
@@ -155,6 +178,7 @@ function verificarResposta(indiceSelecionado) {
         perguntaAtual++;
         setTimeout(carregarPergunta, 3000); 
     } else {
+        ticarSom(somErro);
         vidas--;
         atualizarVidas();
         
@@ -178,7 +202,7 @@ function verificarResposta(indiceSelecionado) {
 
 const mensagens=[
 "> Identidade confirmada com sucesso.",
-"> Iniciando Projeto Futuro.exe...",
+"> Iniciando Projeto Futuro...",
 "> Carregando memórias...",
 "> Verificando compatibilidade...",
 "> Compatibilidade encontrada: 100%",
@@ -190,16 +214,69 @@ const mensagens=[
 "> Risadas ✓",
 "> Admiração ✓",
 "> Motivo: impossível não se apaixonar.",
+"> Sincronizando banco de dados emocional...",
+"[░░░░░░░░░░░░░░░░░░░░] 0%",
+"[████░░░░░░░░░░░░░░░░] 20%",
+"[████████░░░░░░░░░░░░] 40%",
+"[████████████░░░░░░░░] 60%",
+"[████████████████░░░░] 80%",
+"[████████████████████] 100%",
 "<span style='color: #ff4d6d;'>&gt; Erro detectado:</span>",
 "<span style='color: #ff4d6d;'>&gt; Relacionamento ainda não oficializado.</span>"
 ];
 
-let indice=0;
-function escrever(){
-    if(indice < mensagens.length){
-        document.getElementById("terminal").innerHTML += mensagens[indice] + "<br>";
-        indice++;
-        setTimeout(escrever, 900);
+let indiceMensagem = 0;
+let indiceCaractere = 0;
+let elementoTerminal = document.getElementById("terminal");
+
+function iniciarTerminal() {
+    elementoTerminal.innerHTML = "";
+    escreverLinha();
+}
+
+function escreverLinha() {
+    if (indiceMensagem < mensagens.length) {
+        let fraseCompleta = mensagens[indiceMensagem];
+        
+        if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
+            if (fraseCompleta.startsWith("[")) {
+                let barraId = "progresso-barra";
+                let containerBarra = document.getElementById(barraId);
+                
+                if (!containerBarra) {
+                    elementoTerminal.innerHTML += "<span id='" + barraId + "'></span><br>";
+                    containerBarra = document.getElementById(barraId);
+                }
+                containerBarra.innerHTML = fraseCompleta;
+                ticarSom(somClique); 
+                indiceMensagem++;
+                setTimeout(escreverLinha, 250); 
+            } else {
+                elementoTerminal.innerHTML += fraseCompleta + "<br>";
+                ticarSom(somErro); 
+                indiceMensagem++;
+                setTimeout(escreverLinha, 600);
+            }
+        } else {
+            if (indiceCaractere === 0) {
+                elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "'></span><br>";
+            }
+            
+            if(fraseCompleta.charAt(indiceCaractere) !== " ") {
+                ticarSom(somClique);
+            }
+            
+            document.getElementById("linha-" + indiceMensagem).innerHTML += fraseCompleta.charAt(indiceCaractere);
+            indiceCaractere++;
+            
+            if (indiceCaractere < fraseCompleta.length) {
+                setTimeout(escreverLinha, 30);
+            } else {
+                indiceCaractere = 0;
+                indiceMensagem++;
+                setTimeout(escreverLinha, 500);
+            }
+        }
     } else {
         document.getElementById("btn-executar").style.display = "inline-block";
     }
@@ -210,7 +287,6 @@ function criarCoracao(){
     heart.className="heart";
     heart.innerHTML="❤️";
     heart.style.left=Math.random()*window.innerWidth+"px";
-    // Deixei a queda um pouquinho mais rápida e adicionando rotação para ficar mais dinâmico
     heart.style.animationDuration=(Math.random()*2+2.5)+"s"; 
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),4500);
@@ -220,7 +296,7 @@ function pedido(){
     document.getElementById("terminal").style.display="none";
     document.getElementById("btn-executar").style.display="none";
     document.getElementById("resultado").style.display="block";
-    setInterval(criarCoracao, 250); // Ajustado o tempo de spawn dos corações para não travar celulares fracos
+    setInterval(criarCoracao, 250); 
 }
 
 carregarPergunta();

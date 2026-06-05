@@ -45,6 +45,20 @@ body{
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
+/* Efeito Glitch para Erros do Sistema */
+.glitch-efeito {
+    animation: glitch 0.4s linear infinite;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+    40% { transform: translate(3px, -2px); filter: hue-rotate(180deg); opacity: 0.9; }
+    60% { transform: translate(-2px, -2px); filter: hue-rotate(270deg); }
+    80% { transform: translate(2px, 2px); filter: hue-rotate(360deg); opacity: 0.95; }
+    100% { transform: translate(0); }
+}
+
 /* Estilos para a seção de perguntas e vidas */
 .quiz-container{text-align:center;}
 .quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
@@ -137,7 +151,7 @@ body{
 
 <canvas id="matrix-canvas"></canvas>
 
-<div class="container">
+<div class="container" id="main-container">
     
     <div id="quiz" class="quiz-container">
         <h2>[SISTEMA BLOQUEADO]</h2>
@@ -193,6 +207,14 @@ const perguntas = [
 let perguntaAtual = 0;
 let vidas = 3;
 
+function aplicarGlitch() {
+    const container = document.getElementById("main-container");
+    container.classList.add("glitch-efeito");
+    setTimeout(() => {
+        container.classList.remove("glitch-efeito");
+    }, 400);
+}
+
 function atualizarVidas() {
     const textoVidas = "❤️".repeat(vidas);
     document.getElementById("contador-vidas").innerHTML = "Tentativas: " + (textoVidas || "💔");
@@ -244,6 +266,7 @@ function verificarResposta(indiceSelecionado) {
     } else {
         vidas--;
         atualizarVidas();
+        aplicarGlitch(); // Aciona o glitch visual ao errar
         
         feedback.style.color = "#ff4d6d";
         
@@ -300,6 +323,11 @@ function iniciarTerminal() {
 function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
+        
+        // Se for a mensagem de Erro Detectado, aciona o Glitch
+        if (fraseCompleta.includes("Erro detectado")) {
+            aplicarGlitch();
+        }
         
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
             if (fraseCompleta.startsWith("[")) {

@@ -18,7 +18,21 @@ body{
     justify-content:center;
     align-items:center;
     padding:15px; /* Menor para aproveitar mais a tela do celular */
+    position: relative;
 }
+
+/* Configuração do Canvas para ficar fixo no fundo de tudo */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Fica atrás do container */
+    opacity: 0.15; /* Sutil para não atrapalhar a leitura */
+    pointer-events: none; /* Garante que não interfira nos cliques */
+}
+
 .container{
     width:100%;
     max-width:600px; /* Reduzido para encaixar melhor visualmente em qualquer tela */
@@ -26,6 +40,8 @@ body{
     padding:25px;
     border-radius:20px;
     box-shadow:0 0 25px rgba(0,255,136,.2);
+    position: relative;
+    z-index: 2; /* Fica acima do Canvas */
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
@@ -60,6 +76,9 @@ body{
 </style>
 </head>
 <body>
+
+<canvas id="matrix-canvas"></canvas>
+
 <div class="container">
     
     <div id="quiz" class="quiz-container">
@@ -214,9 +233,7 @@ function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
         
-        // Se a linha for um erro (span) ou a animação da barra de progresso, atualiza mais rápido e direto
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
-            // Se for barra de progresso, sobrescreve a linha anterior para dar efeito de animação fluida
             if (fraseCompleta.startsWith("[")) {
                 let barraId = "progresso-barra";
                 let containerBarra = document.getElementById(barraId);
@@ -227,7 +244,7 @@ function escreverLinha() {
                 }
                 containerBarra.innerHTML = fraseCompleta;
                 indiceMensagem++;
-                setTimeout(escreverLinha, 250); // Velocidade do carregamento da barra
+                setTimeout(escreverLinha, 250); 
             } else {
                 elementoTerminal.innerHTML += fraseCompleta + "<br>";
                 indiceMensagem++;
@@ -270,6 +287,67 @@ function pedido(){
     document.getElementById("resultado").style.display="block";
     setInterval(criarCoracao, 250); 
 }
+
+// LÓGICA DO EFEITO MATRIX DE CORAÇÕES
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+// Ajusta o tamanho do canvas para o tamanho da tela
+function redimensionarCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+redimensionarCanvas();
+window.addEventListener('resize', redimensionarCanvas);
+
+// Configurações dos caracteres (Misturando código binário e corações)
+const caracteresMatrix = "01❤️01❤️01❤️01";
+const arrCaracteres = caracteresMatrix.split("");
+
+const tamanhoFonte = 14;
+const colunas = canvas.width / tamanhoFonte;
+
+// Guarda a posição Y atual de cada coluna que cai na tela
+const posicoesY = [];
+for (let x = 0; x < colunas; x++) {
+    posicoesY[x] = 1;
+}
+
+function desenharMatrix() {
+    // Cria o efeito de rastro semi-transparente apagando o fundo aos poucos
+    ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < posicoesY.length; i++) {
+        // Escolhe um caractere aleatório do nosso array
+        const caractere = arrCaracteres[Math.floor(Math.random() * arrCaracteres.length)];
+        
+        // Se for um coração fica rosa/vermelho, se for número fica verde hacker
+        if (caractere === "❤️") {
+            ctx.fillStyle = '#ff4d6d';
+        } else {
+            ctx.fillStyle = '#00ff88';
+        }
+        
+        ctx.font = tamanhoFonte + 'px Consolas, monospace';
+
+        const posX = i * tamanhoFonte;
+        const posY = posicoesY[i] * tamanhoFonte;
+
+        ctx.fillText(caractere, posX, posY);
+
+        // Reseta a coluna de volta para o topo de forma randômica depois que passa da tela
+        if (posY > canvas.height && Math.random() > 0.975) {
+            posicoesY[i] = 0;
+        }
+
+        // Move a linha para baixo
+        posicoesY[i]++;
+    }
+}
+
+// Roda a animação suavemente a cada 33 milissegundos
+setInterval(desenharMatrix, 33);
 
 carregarPergunta();
 </script>

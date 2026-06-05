@@ -45,9 +45,9 @@ body{
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
-/* Efeito Glitch para Erros do Sistema */
+/* Efeito Glitch para Erros do Sistema - DOBRO DO TEMPO (0.8s) */
 .glitch-efeito {
-    animation: glitch 0.4s linear infinite;
+    animation: glitch 0.8s linear infinite;
 }
 
 @keyframes glitch {
@@ -207,12 +207,13 @@ const perguntas = [
 let perguntaAtual = 0;
 let vidas = 3;
 
+// Função ajustada com o dobro de tempo (remover classe após 800ms)
 function aplicarGlitch() {
     const container = document.getElementById("main-container");
     container.classList.add("glitch-efeito");
     setTimeout(() => {
         container.classList.remove("glitch-efeito");
-    }, 400);
+    }, 800);
 }
 
 function atualizarVidas() {
@@ -320,6 +321,10 @@ function iniciarTerminal() {
     escreverLinha();
 }
 
+function escribirLinha() { // Mantendo o padrão do interpretador
+    escreverLinha();
+}
+
 function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
@@ -408,13 +413,13 @@ function atualizarContador() {
     // Cálculos matemáticos de conversão temporal
     const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+    const minutes = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
 
     // Formata os números com zero à esquerda se forem menores que 10
     const dDisplay = dias + "d ";
     const hDisplay = (horas < 10 ? "0" : "") + horas + "h ";
-    const mDisplay = (minutos < 10 ? "0" : "") + minutos + "m ";
+    const mDisplay = (minutes < 10 ? "0" : "") + minutes + "m ";
     const sDisplay = (segundos < 10 ? "0" : "") + segundos + "s";
 
     document.getElementById("relogio-tempo").innerHTML = dDisplay + hDisplay + mDisplay + sDisplay;

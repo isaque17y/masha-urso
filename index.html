@@ -318,7 +318,6 @@ async function chamarBiometriaCelular() {
     }
 }
 
-// O que acontece no sucesso real - Exibe o nome completo dela na tela imediatamente
 function sucessoBiometriaAutenticada() {
     const statusTxt = document.getElementById("biometria-status");
     const botaoBio = document.querySelector(".btn-solicitar-biometria");
@@ -330,7 +329,6 @@ function sucessoBiometriaAutenticada() {
     statusTxt.style.color = "#00ff88";
     statusTxt.innerHTML = "ACESSO PERMITIDO!<br><span style='color:white; font-size:16px;'>Usuária: Any Alice Ibiapina Duarte</span>";
     
-    // Deixei 2.5 segundos para dar tempo dela ler o nome completo dela brilhando na tela
     setTimeout(() => {
         document.getElementById("tela-biometria").style.display = "none";
         document.getElementById("quiz").style.display = "block";
@@ -338,7 +336,6 @@ function sucessoBiometriaAutenticada() {
     }, 2500);
 }
 
-// Plano B se o ambiente travar o protocolo de chaves locais
 function fallbackSimulado() {
     const statusTxt = document.getElementById("biometria-status");
     statusTxt.innerText = "> Escaneando camada digital local...";
@@ -450,6 +447,12 @@ function verificarResposta(indiceSelecionado) {
         vidas--;
         atualizarVidas();
         aplicarGlitch();
+        
+        // EXECUTA A VIBRAÇÃO NO CELULAR QUANDO ERRAR
+        if (navigator.vibrate) {
+            navigator.vibrate([100]);
+        }
+        
         feedback.style.color = "#ff4d6d";
         
         if (vidas === 2) {

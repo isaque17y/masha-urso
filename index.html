@@ -59,8 +59,73 @@ body{
     100% { transform: translate(0); }
 }
 
+/* TELA DE DIGITAL (BIOMETRIA) */
+.biometria-container {
+    text-align: center;
+    animation: aparecer 0.5s ease;
+}
+.biometria-container h2 {
+    font-size: 20px;
+    color: white;
+    margin-bottom: 5px;
+}
+.biometria-sub {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+.digital-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 25px auto;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.digital-pad {
+    width: 100%;
+    height: 100%;
+    border: 3px solid #00ff88;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 55px;
+    background: transparent;
+    transition: all 0.3s;
+    user-select: none;
+}
+/* Barra de scanner que sobe */
+.digital-scanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: rgba(0, 255, 136, 0.2);
+    border-bottom: 3px solid #00ff88;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: height 0.1s linear;
+}
+/* Animação de pulso quando encosta */
+.scanning {
+    animation: escaneando-pulso 0.5s infinite alternate;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+}
+@keyframes escaneando-pulso {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+#biometria-status {
+    font-size: 16px;
+    font-weight: bold;
+    height: 30px;
+    color: #00ff88;
+}
+
 /* Estilos para a seção de perguntas e vidas */
-.quiz-container{text-align:center;}
+.quiz-container{text-align:center; display:none;} /* Começa escondido para dar lugar à digital */
 .quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
 .vidas{font-size:20px;margin-bottom:20px;color:#ff4d6d;letter-spacing:3px;}
 .opcoes{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
@@ -133,6 +198,51 @@ body{
     font-weight: bold;
 }
 
+/* ESTILO DO NOTIFICATION BANNER DE CONQUISTAS */
+#conquista-banner {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #161b22;
+    border: 2px solid #00ff88;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 90%;
+    max-width: 400px;
+}
+#conquista-banner.mostrar {
+    top: 20px;
+}
+.conquista-icone {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+.conquista-texto h4 {
+    color: #00ff88;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+.conquista-texto p {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 @keyframes cair{from{transform:translateY(0) rotate(0deg);opacity:1;}to{transform:translateY(110vh) rotate(360deg);opacity:0;}}
 @keyframes aparecer{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
 
@@ -149,9 +259,29 @@ body{
 </head>
 <body>
 
+<div id="conquista-banner">
+    <div class="conquista-icone" id="conquista-emoji">🏆</div>
+    <div class="conquista-texto">
+        <h4>Conquista Desbloqueada</h4>
+        <p id="conquista-nome">Nome da Conquista</p>
+    </div>
+</div>
+
 <canvas id="matrix-canvas"></canvas>
 
 <div class="container" id="main-container">
+    
+    <div id="tela-biometria" class="biometria-container">
+        <h2>RECONHECIMENTO REQUERIDO</h2>
+        <p class="biometria-sub">Mantenha o dedo pressionado para escanear</p>
+        
+        <div class="digital-wrapper" id="btn-digital" onmousedown="iniciarScan()" onmouseup="pararScan()" onmouseleave="pararScan()" ontouchstart="iniciarScan(event)" ontouchend="pararScan(event)">
+            <div class="digital-scanner" id="scanner-barra"></div>
+            <div class="digital-pad" id="digital-icone">fingerprint</div>
+        </div>
+        
+        <div id="biometria-status">&gt; Aguardando biometria...</div>
+    </div>
     
     <div id="quiz" class="quiz-container">
         <h2>[SISTEMA BLOQUEADO]</h2>
@@ -186,6 +316,61 @@ body{
 </div>
 
 <script>
+// LÓGICA DO SCANNER DE DIGITAL INTERATIVO
+let scanProgresso = 0;
+let scanIntervalo = null;
+const barraScanner = document.getElementById("scanner-barra");
+const iconeDigital = document.getElementById("digital-icone");
+const statusBiometria = document.getElementById("biometria-status");
+
+function iniciarScan(e) {
+    if(e) e.preventDefault(); // Evita dar zoom ou rolar a página no mobile
+    
+    iconeDigital.classList.add("scanning");
+    statusBiometria.style.color = "#00ff88";
+    statusBiometria.innerText = "> Escaneando digital...";
+    
+    scanIntervalo = setInterval(() => {
+        if (scanProgresso < 100) {
+            scanProgresso += 4; // Velocidade do carregamento
+            if(scanProgresso > 100) scanProgresso = 100;
+            barraScanner.style.height = scanProgresso + "%";
+        } else {
+            clearInterval(scanIntervalo);
+            acessoPermitido();
+        }
+    }, 40);
+}
+
+function pararScan(e) {
+    if(e) e.preventDefault();
+    if(scanProgresso < 100) {
+        clearInterval(scanIntervalo);
+        scanProgresso = 0;
+        barraScanner.style.height = "0%";
+        iconeDigital.classList.remove("scanning");
+        statusBiometria.style.color = "#ff4d6d";
+        statusBiometria.innerText = "> Falha: Mantenha pressionado!";
+    }
+}
+
+function acessoPermitido() {
+    iconeDigital.classList.remove("scanning");
+    iconeDigital.style.background = "#00ff88";
+    iconeDigital.style.color = "black";
+    statusBiometria.style.color = "#00ff88";
+    statusBiometria.innerText = "ACESSO PERMITIDO!";
+    
+    // Pequena pausa dramática de sucesso antes de sumir e carregar o quiz
+    setTimeout(() => {
+        document.getElementById("tela-biometria").style.display = "none";
+        document.getElementById("quiz").style.display = "block";
+        carregarPergunta(); // Carrega o jogo de fato aqui
+    }, 1200);
+}
+
+
+// PROGRAMAÇÃO DO QUIZ E HISTÓRIA
 const perguntas = [
     {
         pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
@@ -212,7 +397,20 @@ const perguntas = [
 let perguntaAtual = 0;
 let vidas = 3;
 
-// Função ajustada com o dobro de tempo (remover classe após 800ms)
+function desbloquearConquista(nome, emoji = "🏆", bgCor = "transparent") {
+    const banner = document.getElementById("conquista-banner");
+    const iconeContainer = document.getElementById("conquista-emoji");
+    
+    iconeContainer.innerText = emoji;
+    iconeContainer.style.background = bgCor; 
+    document.getElementById("conquista-nome").innerText = nome;
+    
+    banner.classList.add("mostrar");
+    setTimeout(() => {
+        banner.classList.remove("mostrar");
+    }, 4000);
+}
+
 function aplicarGlitch() {
     const container = document.getElementById("main-container");
     container.classList.add("glitch-efeito");
@@ -265,6 +463,9 @@ function verificarResposta(indiceSelecionado) {
             feedback.innerText = "Isso cachinhos! Avançando...";
         } else if (perguntaAtual === 2) {
             feedback.innerText = "Acertou! Sabia que era esse o vício. Próxima...";
+            setTimeout(() => {
+                desbloquearConquista("Viciada em Takis Fuego", "🔥", "#6a1b9a");
+            }, 600);
         } else {
             feedback.innerText = "Até que você não é ruim, está quase chegando...";
         }
@@ -274,7 +475,7 @@ function verificarResposta(indiceSelecionado) {
     } else {
         vidas--;
         atualizarVidas();
-        aplicarGlitch(); // Aciona o glitch visual ao errar
+        aplicarGlitch();
         
         feedback.style.color = "#ff4d6d";
         
@@ -332,7 +533,6 @@ function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
         
-        // Se for a mensagem de Erro Detectado, aciona o Glitch
         if (fraseCompleta.includes("Erro detectado")) {
             aplicarGlitch();
         }
@@ -391,7 +591,6 @@ function pedido(){
     document.getElementById("resultado").style.display="block";
 }
 
-// LOGICA DO BOTÃO FUJÃO (MECÂNICA MOBILE/DESKTOP)
 function fugir() {
     const botaoNao = document.getElementById("btn-nao");
     botaoNao.style.position = "fixed";
@@ -406,20 +605,17 @@ function fugir() {
     botaoNao.style.top = posYAleatoria + "px";
 }
 
-// CONFIGURAÇÃO DO CONTADOR EM TEMPO REAL (30 de Janeiro de 2026 às 22:50)
-const dataInicio = new Date(2026, 0, 30, 22, 50, 0); // Mês no JS começa em 0 (Janeiro = 0)
+const dataInicio = new Date(2026, 0, 30, 22, 50, 0);
 
 function atualizarContador() {
     const agora = new Date();
     const diferenca = agora - dataInicio;
 
-    // Cálculos matemáticos de conversão temporal
     const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
     const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
 
-    // Formata os números com zero à esquerda se forem menores que 10
     const dDisplay = dias + "d ";
     const hDisplay = (horas < 10 ? "0" : "") + horas + "h ";
     const mDisplay = (minutes < 10 ? "0" : "") + minutes + "m ";
@@ -428,21 +624,21 @@ function atualizarContador() {
     document.getElementById("relogio-tempo").innerHTML = dDisplay + hDisplay + mDisplay + sDisplay;
 }
 
-// AÇÃO DO BOTÃO SIM
 function aceitou() {
     document.getElementById("bloco-botoes").style.display = "none";
     document.getElementById("titulo-sucesso").innerHTML = "🥰 Oficializado com Sucesso! 🥰";
     
-    // Mostra o painel do contador e inicia a atualização a cada 1 segundo
     document.getElementById("painel-tempo").style.display = "block";
     atualizarContador(); 
     setInterval(atualizarContador, 1000);
 
-    // Inicia chuva de corações
     setInterval(criarCoracao, 250); 
+
+    setTimeout(() => {
+        desbloquearConquista("O Amor Venceu o Sistema", "👑", "transparent");
+    }, 800);
 }
 
-// LÓGICA DO EFEITO MATRIX DE CORAÇÕES
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
 
@@ -490,7 +686,7 @@ function desenharMatrix() {
 }
 setInterval(desenharMatrix, 33);
 
-carregarPergunta();
+// Removido o carregamento automático do quiz da linha final, pois agora quem gerencia isso é a biometria bem-sucedida!
 </script>
 </body>
 </html>

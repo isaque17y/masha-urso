@@ -104,9 +104,9 @@ body{
 #biometria-status {
     font-size: 15px;
     font-weight: bold;
-    height: 40px;
+    height: 60px;
     color: #8b949e;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .quiz-container{text-align:center; display:none;}
@@ -285,13 +285,11 @@ async function chamarBiometriaCelular() {
     statusTxt.style.color = "#00ff88";
     statusTxt.innerText = "> Ativando sensor biométrico do aparelho...";
 
-    // 1. Verifica se o navegador/aparelho suporta autenticação local
     if (!window.PublicKeyCredential) {
-        fallbackSimulado(); // Se rodar num PC antigo ou navegador sem suporte, faz o plano B
+        fallbackSimulado(); 
         return;
     }
 
-    // Configuração básica exigida pelo Android/iOS para disparar a caixinha nativa
     const opçõesBiometria = {
         publicKey: {
             challenge: new Uint8Array([1, 2, 3, 4]), 
@@ -299,32 +297,28 @@ async function chamarBiometriaCelular() {
             user: {
                 id: new Uint8Array([1]),
                 name: "any.alice",
-                displayName: "Any Alice"
+                displayName: "Any Alice Ibiapina Duarte"
             },
             pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-            authenticatorSelection: { authenticatorAttachment: "platform" }, // Força o leitor local do celular
+            authenticatorSelection: { authenticatorAttachment: "platform" }, 
             timeout: 60000
         }
     };
 
     try {
-        // Dispara o sensor nativo do celular
         await navigator.credentials.create(opçõesBiometria);
-        // Se ela colocou o dedo certo, o código continua direto para cá:
         sucessoBiometriaAutenticada();
     } catch (erro) {
-        // Se ela cancelar ou errar o dedo
         if (erro.name === "NotAllowedError") {
             statusTxt.style.color = "#ff4d6d";
-            statusTxt.innerText = "> Acesso Negado ou Cancelado.\n Tente novamente.";
+            statusTxt.innerText = "> Acesso Negado ou Cancelado.\nTente novamente.";
         } else {
-            // Em navegadores de testes locais que bloqueiam WebAuthn puro, joga o plano B imersivo para não quebrar a surpresa
             fallbackSimulado();
         }
     }
 }
 
-// O que acontece no sucesso real
+// O que acontece no sucesso real - Exibe o nome completo dela na tela imediatamente
 function sucessoBiometriaAutenticada() {
     const statusTxt = document.getElementById("biometria-status");
     const botaoBio = document.querySelector(".btn-solicitar-biometria");
@@ -334,16 +328,17 @@ function sucessoBiometriaAutenticada() {
     botaoBio.innerHTML = "✓";
     
     statusTxt.style.color = "#00ff88";
-    statusTxt.innerHTML = "ACESSO PERMITIDO!<br><span style='color:white; font-size:18px;'>Usuária: Any Alice</span>";
+    statusTxt.innerHTML = "ACESSO PERMITIDO!<br><span style='color:white; font-size:16px;'>Usuária: Any Alice Ibiapina Duarte</span>";
     
+    // Deixei 2.5 segundos para dar tempo dela ler o nome completo dela brilhando na tela
     setTimeout(() => {
         document.getElementById("tela-biometria").style.display = "none";
         document.getElementById("quiz").style.display = "block";
         carregarPergunta();
-    }, 2000);
+    }, 2500);
 }
 
-// Plano B inteligente caso o navegador trave o protocolo de chaves de segurança local
+// Plano B se o ambiente travar o protocolo de chaves locais
 function fallbackSimulado() {
     const statusTxt = document.getElementById("biometria-status");
     statusTxt.innerText = "> Escaneando camada digital local...";
@@ -363,7 +358,7 @@ function fallbackSimulado() {
 const perguntas = [
     {
         pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
-        options: ["Any Alice", "Any Alice de certeza", "Todas as alternativas anteriores"],
+        opcoes: ["Any Alice", "Any Alice de certeza", "Todas as alternativas anteriores"],
         correta: 2 
     },
     {
@@ -383,7 +378,7 @@ const perguntas = [
     }
 ];
 
-let perguntaAtual = 0;
+let preguntaAtual = 0;
 let vidas = 3;
 
 function desbloquearConquista(nome, emoji = "🏆", bgCor = "transparent") {
@@ -412,19 +407,18 @@ function carregarPergunta() {
     feedback.innerHTML = "";
     atualizarVidas();
     
-    if (perguntaAtual < perguntas.length) {
-        const dados = perguntas[perguntaAtual];
+    if (preguntaAtual < perguntas.length) {
+        const dados = perguntas[preguntaAtual];
         document.getElementById("pergunta-texto").innerText = dados.pergunta;
         
         const opcoesContainer = document.getElementById("opcoes-container");
         opcoesContainer.innerHTML = "";
         
-        // Garante leitura dinâmica correta das chaves de perguntas
-        let opcoesLista = dados.opcoes || dados.options;
+        let opcoesLista = dados.opcoes;
         opcoesLista.forEach((opcao, indice) => {
             const botao = document.createElement("button");
             botao.className = "btn-quiz";
-            botao.innerText = opacity = opcao;
+            botao.innerText = opcao;
             botao.onclick = () => verificarResposta(indice);
             opcoesContainer.appendChild(botao);
         });
@@ -440,17 +434,17 @@ function verificarResposta(indiceSelecionado) {
     const botoes = document.querySelectorAll(".btn-quiz");
     botoes.forEach(btn => btn.disabled = true);
     
-    if (indiceSelecionado === perguntas[perguntaAtual].correta) {
+    if (indiceSelecionado === perguntas[preguntaAtual].correta) {
         feedback.style.color = "#00ff88";
-        if (perguntaAtual === 0) {
+        if (preguntaAtual === 0) {
             feedback.innerText = "Isso cachinhos! Avançando...";
-        } else if (perguntaAtual === 2) {
+        } else if (preguntaAtual === 2) {
             feedback.innerText = "Acertou! Sabia que era esse o vício. Próxima...";
             setTimeout(() => { desbloquearConquista("Viciada em Takis Fuego", "🔥", "#6a1b9a"); }, 600);
         } else {
             feedback.innerText = "Até que você não é ruim, está quase chegando...";
         }
-        perguntaAtual++;
+        preguntaAtual++;
         setTimeout(carregarPergunta, 3000); 
     } else {
         vidas--;
@@ -465,7 +459,7 @@ function verificarResposta(indiceSelecionado) {
         } else if (vidas <= 0) {
             feedback.innerText = "GAME OVER! Perdeu toda a aura. Reiniciando o sistema...";
             vidas = 3;
-            perguntaAtual = 0;
+            preguntaAtual = 0;
             setTimeout(carregarPergunta, 3000); 
             return;
         }

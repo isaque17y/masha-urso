@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Consolas, monospace;}
 html, body {
     width: 100%;
-    overflow-x: hidden; /* Garante que nada escape para os lados no celular */
+    overflow-x: hidden;
 }
 body{
     background:#0d1117;
@@ -17,35 +17,33 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:15px; /* Menor para aproveitar mais a tela do celular */
+    padding:15px;
     position: relative;
 }
 
-/* Configuração do Canvas para ficar fixo no fundo de tudo */
 #matrix-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Fica atrás do container */
-    opacity: 0.15; /* Sutil para não atrapalhar a leitura */
-    pointer-events: none; /* Garante que não interfira nos cliques */
+    z-index: 1;
+    opacity: 0.15;
+    pointer-events: none;
 }
 
 .container{
     width:100%;
-    max-width:600px; /* Reduzido para encaixar melhor visualmente em qualquer tela */
+    max-width:600px;
     background:#161b22;
     padding:25px;
     border-radius:20px;
     box-shadow:0 0 25px rgba(0,255,136,.2);
     position: relative;
-    z-index: 2; /* Fica acima do Canvas */
+    z-index: 2;
 }
 #terminal{line-height:1.8;font-size:16px;display:none;word-break: break-word;}
 
-/* Efeito Glitch para Erros do Sistema - DOBRO DO TEMPO (0.8s) */
 .glitch-efeito {
     animation: glitch 0.8s linear infinite;
 }
@@ -59,7 +57,7 @@ body{
     100% { transform: translate(0); }
 }
 
-/* TELA DE DIGITAL (BIOMETRIA) */
+/* TELA DE DIGITAL REAL */
 .biometria-container {
     text-align: center;
     animation: aparecer 0.5s ease;
@@ -68,72 +66,57 @@ body{
     font-size: 20px;
     color: white;
     margin-bottom: 5px;
+    letter-spacing: 1px;
 }
 .biometria-sub {
     color: #8b949e;
     font-size: 14px;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
-.digital-wrapper {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 25px auto;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-.digital-pad {
-    width: 100%;
-    height: 100%;
-    border: 3px solid #00ff88;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 55px;
+.btn-solicitar-biometria {
     background: transparent;
-    transition: all 0.3s;
-    user-select: none;
-}
-/* Barra de scanner que sobe */
-.digital-scanner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0%;
-    background: rgba(0, 255, 136, 0.2);
-    border-bottom: 3px solid #00ff88;
+    border: 3px solid #00ff88;
+    color: #00ff88;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    pointer-events: none;
-    transition: height 0.1s linear;
-}
-/* Animação de pulso quando encosta */
-.scanning {
-    animation: escaneando-pulso 0.5s infinite alternate;
-    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
-}
-@keyframes escaneando-pulso {
-    from { transform: scale(1); }
-    to { transform: scale(1.05); }
-}
-#biometria-status {
     font-size: 16px;
     font-weight: bold;
-    height: 30px;
-    color: #00ff88;
+    cursor: pointer;
+    margin: 0 auto 25px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+    transition: all 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.btn-solicitar-biometria:active {
+    transform: scale(0.95);
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+}
+.fingerprint-icon {
+    font-size: 40px;
+}
+#biometria-status {
+    font-size: 15px;
+    font-weight: bold;
+    height: 40px;
+    color: #8b949e;
+    line-height: 1.5;
 }
 
-/* Estilos para a seção de perguntas e vidas */
-.quiz-container{text-align:center; display:none;} /* Começa escondido para dar lugar à digital */
+.quiz-container{text-align:center; display:none;}
 .quiz-container h2{margin-bottom:10px;font-size:20px;color:white;}
 .vidas{font-size:20px;margin-bottom:20px;color:#ff4d6d;letter-spacing:3px;}
 .opcoes{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
 .btn-quiz{padding:14px;border:2px solid #00ff88;border-radius:10px;background:transparent;color:#00ff88;font-size:15px;cursor:pointer;font-weight:bold;transition:all 0.2s;-webkit-tap-highlight-color: transparent;}
-.btn-quiz:hover, .btn-quiz:active{background:#00ff88;color:black;} /* :active melhora o toque no celular */
+.btn-quiz:hover, .btn-quiz:active{background:#00ff88;color:black;}
 #feedback{margin-top:15px;height:45px;font-size:15px;font-weight:bold;line-height:1.4;}
 
-/* Botão final */
 #btn-executar{display:none;margin-top:25px;padding:15px 30px;border:none;border-radius:10px;background:#00ff88;color:black;font-size:18px;cursor:pointer;font-weight:bold;transition: transform 0.2s;width:100%;-webkit-tap-highlight-color: transparent;}
 
 .resultado{display:none;text-align:center;animation:aparecer 1s ease;}
@@ -141,7 +124,6 @@ body{
 .resultado p{color:white;font-size:17px;margin:12px 0; line-height: 1.6;}
 .heart{position:fixed;top:-20px;font-size:25px;pointer-events:none;animation:cair linear forwards;}
 
-/* Área e estilo dos botões de decisão final */
 .botoes-resposta {
     display: flex;
     justify-content: center;
@@ -161,21 +143,10 @@ body{
     transition: transform 0.1s;
     -webkit-tap-highlight-color: transparent;
 }
-#btn-sim {
-    background: #00ff88;
-    color: black;
-}
-#btn-sim:active {
-    transform: scale(0.95);
-}
-#btn-nao {
-    background: #ff4d6d;
-    color: white;
-    position: relative; 
-    z-index: 10;
-}
+#btn-sim { background: #00ff88; color: black; }
+#btn-sim:active { transform: scale(0.95); }
+#btn-nao { background: #ff4d6d; color: white; position: relative; z-index: 10; }
 
-/* Estilo do Painel do Contador em Tempo Real */
 .contador-painel {
     display: none;
     margin-top: 30px;
@@ -198,7 +169,6 @@ body{
     font-weight: bold;
 }
 
-/* ESTILO DO NOTIFICATION BANNER DE CONQUISTAS */
 #conquista-banner {
     position: fixed;
     top: -100px;
@@ -217,9 +187,7 @@ body{
     width: 90%;
     max-width: 400px;
 }
-#conquista-banner.mostrar {
-    top: 20px;
-}
+#conquista-banner.mostrar { top: 20px; }
 .conquista-icone {
     font-size: 24px;
     display: flex;
@@ -237,16 +205,11 @@ body{
     letter-spacing: 1px;
     margin-bottom: 2px;
 }
-.conquista-texto p {
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-}
+.conquista-texto p { color: white; font-size: 14px; font-weight: bold; }
 
 @keyframes cair{from{transform:translateY(0) rotate(0deg);opacity:1;}to{transform:translateY(110vh) rotate(360deg);opacity:0;}}
 @keyframes aparecer{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
 
-/* Ajustes específicos para telas muito pequenas */
 @media (max-width: 380px) {
     .container{padding: 15px;}
     .quiz-container h2{font-size: 18px;}
@@ -272,15 +235,15 @@ body{
 <div class="container" id="main-container">
     
     <div id="tela-biometria" class="biometria-container">
-        <h2>RECONHECIMENTO REQUERIDO</h2>
-        <p class="biometria-sub">Mantenha o dedo pressionado para escanear</p>
+        <h2>AUTENTICAÇÃO REQUERIDA</h2>
+        <p class="biometria-sub">O sistema exige validação de identidade</p>
         
-        <div class="digital-wrapper" id="btn-digital" onmousedown="iniciarScan()" onmouseup="pararScan()" onmouseleave="pararScan()" ontouchstart="iniciarScan(event)" ontouchend="pararScan(event)">
-            <div class="digital-scanner" id="scanner-barra"></div>
-            <div class="digital-pad" id="digital-icone">fingerprint</div>
-        </div>
+        <button class="btn-solicitar-biometria" onclick="chamarBiometriaCelular()">
+            <span class="fingerprint-icon">☝️</span>
+            <span>TOCAR</span>
+        </button>
         
-        <div id="biometria-status">&gt; Aguardando biometria...</div>
+        <div id="biometria-status">&gt; Clique no botão para iniciar o sensor...</div>
     </div>
     
     <div id="quiz" class="quiz-container">
@@ -316,65 +279,91 @@ body{
 </div>
 
 <script>
-// LÓGICA DO SCANNER DE DIGITAL INTERATIVO
-let scanProgresso = 0;
-let scanIntervalo = null;
-const barraScanner = document.getElementById("scanner-barra");
-const iconeDigital = document.getElementById("digital-icone");
-const statusBiometria = document.getElementById("biometria-status");
+// FUNÇÃO DE BIOMETRIA REAL DO SMARTPHONE
+async function chamarBiometriaCelular() {
+    const statusTxt = document.getElementById("biometria-status");
+    statusTxt.style.color = "#00ff88";
+    statusTxt.innerText = "> Ativando sensor biométrico do aparelho...";
 
-function iniciarScan(e) {
-    if(e) e.preventDefault(); // Evita dar zoom ou rolar a página no mobile
-    
-    iconeDigital.classList.add("scanning");
-    statusBiometria.style.color = "#00ff88";
-    statusBiometria.innerText = "> Escaneando digital...";
-    
-    scanIntervalo = setInterval(() => {
-        if (scanProgresso < 100) {
-            scanProgresso += 4; // Velocidade do carregamento
-            if(scanProgresso > 100) scanProgresso = 100;
-            barraScanner.style.height = scanProgresso + "%";
-        } else {
-            clearInterval(scanIntervalo);
-            acessoPermitido();
+    // 1. Verifica se o navegador/aparelho suporta autenticação local
+    if (!window.PublicKeyCredential) {
+        fallbackSimulado(); // Se rodar num PC antigo ou navegador sem suporte, faz o plano B
+        return;
+    }
+
+    // Configuração básica exigida pelo Android/iOS para disparar a caixinha nativa
+    const opçõesBiometria = {
+        publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4]), 
+            rp: { name: "Projeto Futuro" },
+            user: {
+                id: new Uint8Array([1]),
+                name: "any.alice",
+                displayName: "Any Alice"
+            },
+            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+            authenticatorSelection: { authenticatorAttachment: "platform" }, // Força o leitor local do celular
+            timeout: 60000
         }
-    }, 40);
-}
+    };
 
-function pararScan(e) {
-    if(e) e.preventDefault();
-    if(scanProgresso < 100) {
-        clearInterval(scanIntervalo);
-        scanProgresso = 0;
-        barraScanner.style.height = "0%";
-        iconeDigital.classList.remove("scanning");
-        statusBiometria.style.color = "#ff4d6d";
-        statusBiometria.innerText = "> Falha: Mantenha pressionado!";
+    try {
+        // Dispara o sensor nativo do celular
+        await navigator.credentials.create(opçõesBiometria);
+        // Se ela colocou o dedo certo, o código continua direto para cá:
+        sucessoBiometriaAutenticada();
+    } catch (erro) {
+        // Se ela cancelar ou errar o dedo
+        if (erro.name === "NotAllowedError") {
+            statusTxt.style.color = "#ff4d6d";
+            statusTxt.innerText = "> Acesso Negado ou Cancelado.\n Tente novamente.";
+        } else {
+            // Em navegadores de testes locais que bloqueiam WebAuthn puro, joga o plano B imersivo para não quebrar a surpresa
+            fallbackSimulado();
+        }
     }
 }
 
-function acessoPermitido() {
-    iconeDigital.classList.remove("scanning");
-    iconeDigital.style.background = "#00ff88";
-    iconeDigital.style.color = "black";
-    statusBiometria.style.color = "#00ff88";
-    statusBiometria.innerText = "ACESSO PERMITIDO!";
+// O que acontece no sucesso real
+function sucessoBiometriaAutenticada() {
+    const statusTxt = document.getElementById("biometria-status");
+    const botaoBio = document.querySelector(".btn-solicitar-biometria");
     
-    // Pequena pausa dramática de sucesso antes de sumir e carregar o quiz
+    botaoBio.style.background = "#00ff88";
+    botaoBio.style.color = "black";
+    botaoBio.innerHTML = "✓";
+    
+    statusTxt.style.color = "#00ff88";
+    statusTxt.innerHTML = "ACESSO PERMITIDO!<br><span style='color:white; font-size:18px;'>Usuária: Any Alice</span>";
+    
     setTimeout(() => {
         document.getElementById("tela-biometria").style.display = "none";
         document.getElementById("quiz").style.display = "block";
-        carregarPergunta(); // Carrega o jogo de fato aqui
-    }, 1200);
+        carregarPergunta();
+    }, 2000);
+}
+
+// Plano B inteligente caso o navegador trave o protocolo de chaves de segurança local
+function fallbackSimulado() {
+    const statusTxt = document.getElementById("biometria-status");
+    statusTxt.innerText = "> Escaneando camada digital local...";
+    let cont = 0;
+    let t = setInterval(() => {
+        cont += 20;
+        statusTxt.innerText = `> Escaneando hardware... ${cont}%`;
+        if(cont >= 100) {
+            clearInterval(t);
+            sucessoBiometriaAutenticada();
+        }
+    }, 400);
 }
 
 
-// PROGRAMAÇÃO DO QUIZ E HISTÓRIA
+// LOGICA DO QUIZ E DO RESTO DO SISTEMA
 const perguntas = [
     {
         pergunta: "1. Qual é o nome da pessoa mais incrível, linda e perfeita do mundo?",
-        opcoes: ["Any Alice", "Any Alice de certeza", "Todas as alternativas anteriores"],
+        options: ["Any Alice", "Any Alice de certeza", "Todas as alternativas anteriores"],
         correta: 2 
     },
     {
@@ -400,23 +389,17 @@ let vidas = 3;
 function desbloquearConquista(nome, emoji = "🏆", bgCor = "transparent") {
     const banner = document.getElementById("conquista-banner");
     const iconeContainer = document.getElementById("conquista-emoji");
-    
     iconeContainer.innerText = emoji;
     iconeContainer.style.background = bgCor; 
     document.getElementById("conquista-nome").innerText = nome;
-    
     banner.classList.add("mostrar");
-    setTimeout(() => {
-        banner.classList.remove("mostrar");
-    }, 4000);
+    setTimeout(() => { banner.classList.remove("mostrar"); }, 4000);
 }
 
 function aplicarGlitch() {
     const container = document.getElementById("main-container");
     container.classList.add("glitch-efeito");
-    setTimeout(() => {
-        container.classList.remove("glitch-efeito");
-    }, 800);
+    setTimeout(() => { container.classList.remove("glitch-efeito"); }, 800);
 }
 
 function atualizarVidas() {
@@ -436,10 +419,12 @@ function carregarPergunta() {
         const opcoesContainer = document.getElementById("opcoes-container");
         opcoesContainer.innerHTML = "";
         
-        dados.opcoes.forEach((opcao, indice) => {
+        // Garante leitura dinâmica correta das chaves de perguntas
+        let opcoesLista = dados.opcoes || dados.options;
+        opcoesLista.forEach((opcao, indice) => {
             const botao = document.createElement("button");
             botao.className = "btn-quiz";
-            botao.innerText = opcao;
+            botao.innerText = opacity = opcao;
             botao.onclick = () => verificarResposta(indice);
             opcoesContainer.appendChild(botao);
         });
@@ -452,31 +437,25 @@ function carregarPergunta() {
 
 function verificarResposta(indiceSelecionado) {
     const feedback = document.getElementById("feedback");
-    
     const botoes = document.querySelectorAll(".btn-quiz");
     botoes.forEach(btn => btn.disabled = true);
     
     if (indiceSelecionado === perguntas[perguntaAtual].correta) {
         feedback.style.color = "#00ff88";
-        
         if (perguntaAtual === 0) {
             feedback.innerText = "Isso cachinhos! Avançando...";
         } else if (perguntaAtual === 2) {
             feedback.innerText = "Acertou! Sabia que era esse o vício. Próxima...";
-            setTimeout(() => {
-                desbloquearConquista("Viciada em Takis Fuego", "🔥", "#6a1b9a");
-            }, 600);
+            setTimeout(() => { desbloquearConquista("Viciada em Takis Fuego", "🔥", "#6a1b9a"); }, 600);
         } else {
             feedback.innerText = "Até que você não é ruim, está quase chegando...";
         }
-        
         perguntaAtual++;
         setTimeout(carregarPergunta, 3000); 
     } else {
         vidas--;
         atualizarVidas();
         aplicarGlitch();
-        
         feedback.style.color = "#ff4d6d";
         
         if (vidas === 2) {
@@ -490,7 +469,6 @@ function verificarResposta(indiceSelecionado) {
             setTimeout(carregarPergunta, 3000); 
             return;
         }
-        
         setTimeout(carregarPergunta, 3000); 
     }
 }
@@ -532,16 +510,12 @@ function iniciarTerminal() {
 function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
-        
-        if (fraseCompleta.includes("Erro detectado")) {
-            aplicarGlitch();
-        }
+        if (fraseCompleta.includes("Erro detectado")) aplicarGlitch();
         
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
             if (fraseCompleta.startsWith("[")) {
                 let barraId = "progresso-barra";
                 let containerBarra = document.getElementById(barraId);
-                
                 if (!containerBarra) {
                     elementoTerminal.innerHTML += "<span id='" + barraId + "'></span><br>";
                     containerBarra = document.getElementById(barraId);
@@ -558,7 +532,6 @@ function escreverLinha() {
             if (indiceCaractere === 0) {
                 elementoTerminal.innerHTML += "<span id='linha-" + indiceMensagem + "'></span><br>";
             }
-            
             document.getElementById("linha-" + indiceMensagem).innerHTML += fraseCompleta.charAt(indiceCaractere);
             indiceCaractere++;
             
@@ -594,13 +567,10 @@ function pedido(){
 function fugir() {
     const botaoNao = document.getElementById("btn-nao");
     botaoNao.style.position = "fixed";
-    
     const larguraMaxima = window.innerWidth - 120;
     const alturaMaxima = window.innerHeight - 50;
-    
     const posXAleatoria = Math.floor(Math.random() * larguraMaxima);
     const posYAleatoria = Math.floor(Math.random() * alturaMaxima);
-    
     botaoNao.style.left = posXAleatoria + "px";
     botaoNao.style.top = posYAleatoria + "px";
 }
@@ -610,7 +580,6 @@ const dataInicio = new Date(2026, 0, 30, 22, 50, 0);
 function atualizarContador() {
     const agora = new Date();
     const diferenca = agora - dataInicio;
-
     const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
@@ -620,32 +589,22 @@ function atualizarContador() {
     const hDisplay = (horas < 10 ? "0" : "") + horas + "h ";
     const mDisplay = (minutes < 10 ? "0" : "") + minutes + "m ";
     const sDisplay = (segundos < 10 ? "0" : "") + segundos + "s";
-
     document.getElementById("relogio-tempo").innerHTML = dDisplay + hDisplay + mDisplay + sDisplay;
 }
 
 function aceitou() {
     document.getElementById("bloco-botoes").style.display = "none";
     document.getElementById("titulo-sucesso").innerHTML = "🥰 Oficializado com Sucesso! 🥰";
-    
     document.getElementById("painel-tempo").style.display = "block";
     atualizarContador(); 
     setInterval(atualizarContador, 1000);
-
     setInterval(criarCoracao, 250); 
-
-    setTimeout(() => {
-        desbloquearConquista("O Amor Venceu o Sistema", "👑", "transparent");
-    }, 800);
+    setTimeout(() => { desbloquearConquista("O Amor Venceu o Sistema", "👑", "transparent"); }, 800);
 }
 
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
-
-function redimensionarCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
+function redimensionarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 redimensionarCanvas();
 window.addEventListener('resize', redimensionarCanvas);
 
@@ -653,40 +612,24 @@ const caracteresMatrix = "01❤️01❤️01❤️01";
 const arrCaracteres = caracteresMatrix.split("");
 const tamanhoFonte = 14;
 const colunas = canvas.width / tamanhoFonte;
-
 const posicoesY = [];
-for (let x = 0; x < colunas; x++) {
-    posicoesY[x] = 1;
-}
+for (let x = 0; x < colunas; x++) { posicoesY[x] = 1; }
 
 function desenharMatrix() {
     ctx.fillStyle = 'rgba(13, 17, 23, 0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     for (let i = 0; i < posicoesY.length; i++) {
         const caractere = arrCaracteres[Math.floor(Math.random() * arrCaracteres.length)];
-        
-        if (caractere === "❤️") {
-            ctx.fillStyle = '#ff4d6d';
-        } else {
-            ctx.fillStyle = '#00ff88';
-        }
-        
+        ctx.fillStyle = (caractere === "❤️") ? '#ff4d6d' : '#00ff88';
         ctx.font = tamanhoFonte + 'px Consolas, monospace';
         const posX = i * tamanhoFonte;
         const posY = posicoesY[i] * tamanhoFonte;
-
         ctx.fillText(caractere, posX, posY);
-
-        if (posY > canvas.height && Math.random() > 0.975) {
-            posicoesY[i] = 0;
-        }
+        if (posY > canvas.height && Math.random() > 0.975) { posicoesY[i] = 0; }
         posicoesY[i]++;
     }
 }
 setInterval(desenharMatrix, 33);
-
-// Removido o carregamento automático do quiz da linha final, pois agora quem gerencia isso é a biometria bem-sucedida!
 </script>
 </body>
 </html>

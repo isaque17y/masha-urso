@@ -448,7 +448,7 @@ function verificarResposta(indiceSelecionado) {
         atualizarVidas();
         aplicarGlitch();
         
-        // EXECUTA A VIBRAÇÃO NO CELULAR QUANDO ERRAR
+        // VIBRAÇÃO 1: Quando erra a alternativa no Quiz
         if (navigator.vibrate) {
             navigator.vibrate([100]);
         }
@@ -507,7 +507,14 @@ function iniciarTerminal() {
 function escreverLinha() {
     if (indiceMensagem < mensagens.length) {
         let fraseCompleta = mensagens[indiceMensagem];
-        if (fraseCompleta.includes("Erro detectado")) aplicarGlitch();
+        
+        // VIBRAÇÃO 2: Dispara o padrão de bug/curto-circuito junto com o glitch visual
+        if (fraseCompleta.includes("Erro detectado")) {
+            aplicarGlitch();
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]); 
+            }
+        }
         
         if (fraseCompleta.startsWith("<span") || fraseCompleta.startsWith("[")) {
             if (fraseCompleta.startsWith("[")) {
